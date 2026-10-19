@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>REVEL 2026 – Make your DP</title>
+<style>
+body{margin:0;padding:16px;font-family:system-ui,sans-serif;background:#f6f2f8;color:#2a0e40;display:flex;justify-content:center}
+.w{width:100%;max-width:520px}
+h1{font-size:1.25rem;margin:4px 0}p{color:#6b5a7a;font-size:.9rem;margin:0 0 12px}
+canvas{width:100%;aspect-ratio:1;border-radius:12px;background:#fff;touch-action:none;display:block}
+.r{display:flex;gap:10px;align-items:center;margin-top:12px}
+input[type=range]{flex:1;accent-color:#c0284f}
+button,label{background:#c0284f;color:#fff;border:0;border-radius:10px;padding:12px;font-size:1rem;font-weight:600;flex:1;text-align:center}
+button:disabled{opacity:.4}input[type=file]{display:none}
+</style></head><body><div class="w">
+<h1>REVEL 2026 · Make your DP</h1>
+<p>Upload your photo, drag to move, slide to zoom, then download.</p>
+<canvas id="c" width="1080" height="1080"></canvas>
+<div class="r"><span>−</span><input id="z" type="range" min="1" max="4" step="0.01" value="1" disabled><span>+</span></div>
+<div class="r"><label for="f">Choose photo</label><input id="f" type="file" accept="image/*"><button id="d" disabled>Download</button></div>
+<p id="t" style="display:none;margin-top:12px">If the download did not start, press and hold the image below and choose “Save image”.</p>
+<img id="o" style="display:none;width:100%;border-radius:12px" alt="Your DP">
+</div>
+<script>
+const B=[257,106,821,857],W=1080,cv=document.getElementById('c'),x=cv.getContext('2d'),z=document.getElementById('z'),d=document.getElementById('d');
+const fr=new Image();let p=null,ox=0,oy=0,bs=1;
+const bw=B[2]-B[0],bh=B[3]-B[1],cx=B[0]+bw/2,cy=B[1]+bh/2;
+function draw(){x.clearRect(0,0,W,W);
+if(p){const s=bs*z.value,w=p.width*s,h=p.height*s;x.drawImage(p,cx-w/2+ox,cy-h/2+oy,w,h)}
+else{x.fillStyle='#d9cfe3';x.fillRect(B[0],B[1],bw,bh);x.fillStyle='#6b5a7a';x.font='bold 44px sans-serif';x.textAlign='center';x.fillText('Your photo here',cx,cy)}
+x.drawImage(fr,0,0,W,W)}
+fr.onload=draw;fr.src='frame.png';
+document.getElementById('f').onchange=e=>{const f=e.target.files[0];if(!f)return;
+const i=new Image();i.onload=()=>{p=i;bs=Math.max(bw/i.width,bh/i.height);ox=oy=0;z.value=1;z.disabled=d.disabled=false;draw()};i.src=URL.createObjectURL(f)};
+z.oninput=draw;
+let g=null;
+cv.onpointerdown=e=>{if(!p)return;g={x:e.clientX,y:e.clientY,ox,oy};cv.setPointerCapture(e.pointerId)};
+cv.onpointermove=e=>{if(!g)return;const k=W/cv.getBoundingClientRect().width;ox=g.ox+(e.clientX-g.x)*k;oy=g.oy+(e.clientY-g.y)*k;draw()};
+cv.onpointerup=cv.onpointercancel=()=>g=null;
+d.onclick=()=>{cv.toBlob(b=>{const u=URL.createObjectURL(b),o=document.getElementById('o');
+o.src=u;o.style.display='block';document.getElementById('t').style.display='block';
+const a=document.createElement('a');a.href=u;a.download='revel-2026-dp.png';document.body.appendChild(a);a.click();a.remove();
+o.scrollIntoView({behavior:'smooth'})},'image/png')};
+</script></body></html>
